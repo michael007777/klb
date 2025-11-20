@@ -147,9 +147,8 @@ const App: React.FC = () => {
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
                     <span className="text-sm font-semibold text-white">最新开奖</span>
                   </div>
-                  <div className="text-right">
+                  <div className="flex items-center">
                     <div className="text-lg font-bold text-white">第 {currentDraw?.issue || '---'} 期</div>
-                    <div className="text-xs text-red-100">{currentDraw?.date || '...'}</div>
                   </div>
                 </div>
 
