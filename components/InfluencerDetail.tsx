@@ -114,9 +114,11 @@ export const InfluencerDetail: React.FC<InfluencerDetailProps> = ({
           <p className="text-sm text-gray-600 mb-4 italic">
             “{influencer.currentRecommendation.description}”
           </p>
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-1 justify-center">
             {influencer.currentRecommendation.numbers.map((num) => (
-              <LotteryBall key={num} number={num} size="sm" />
+              <div key={num} className="w-5 h-5 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-sm border border-red-700 border-opacity-20">
+                {num}
+              </div>
             ))}
           </div>
           
@@ -132,17 +134,15 @@ export const InfluencerDetail: React.FC<InfluencerDetailProps> = ({
           </div>
 
           {/* 号码显示区域 */}
-          <div className="flex flex-wrap gap-2 justify-center mb-4">
+          <div className="flex flex-wrap gap-1 justify-center mb-4">
             {(isUnlocked ? nextRecommendation : blurNumbers(nextRecommendation)).map((num, index) => (
               <div key={index} className="relative">
-                <LotteryBall
-                  number={num}
-                  size="sm"
-                  className={!isUnlocked && index >= 3 ? 'opacity-50 blur-sm' : ''}
-                />
+                <div className={`w-5 h-5 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-sm border border-purple-700 border-opacity-20 ${!isUnlocked && index >= 3 ? 'opacity-50 blur-sm' : ''}`}>
+                  {num}
+                </div>
                 {!isUnlocked && index >= 3 && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-4 h-4 text-gray-500" />
+                    <Lock className="w-3 h-3 text-gray-500" />
                   </div>
                 )}
               </div>

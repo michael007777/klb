@@ -119,12 +119,7 @@ const App: React.FC = () => {
             {/* 主标题区域 */}
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-1.5">
-                <div className="flex items-baseline gap-2">
-                  <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-lg">快乐8达人汇</h1>
-                  <div className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full">
-                    <span className="text-xs font-bold text-red-900">PRO</span>
-                  </div>
-                </div>
+                <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-lg">快乐8达人汇</h1>
                 <p className="text-red-50 text-sm font-medium tracking-wide">精准分析 · 智能推荐 · 实时更新</p>
               </div>
               <button
@@ -148,7 +143,7 @@ const App: React.FC = () => {
                     <span className="text-sm font-semibold text-white">最新开奖</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="text-lg font-bold text-white">第 {currentDraw?.issue || '---'} 期</div>
+                    <div className="text-base font-bold text-white">第 {currentDraw?.issue || '---'} 期</div>
                   </div>
                 </div>
 
@@ -161,34 +156,34 @@ const App: React.FC = () => {
                   ) : (
                     <div className="space-y-2">
                       {/* 第一行号码 - 前10个 */}
-                      <div className="flex flex-wrap gap-2 justify-center">
+                      <div className="flex flex-wrap gap-1 justify-center">
                         {currentDraw?.winningNumbers.slice(0, 10).map((n, index) => (
                           <div
                             key={n}
                             className="relative group animate-fadeInUp"
-                            style={{ animationDelay: `${index * 30}ms` }}
+                            style={{ animationDelay: `${index * 20}ms` }}
                           >
-                            <div className="w-6 h-6 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center text-xs font-black text-red-800 shadow-md border-2 border-yellow-200/50 transform group-hover:scale-110 transition-transform duration-200">
+                            <div className="w-5 h-5 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center text-[10px] font-black text-red-800 shadow-sm border border-yellow-200/50 transform group-hover:scale-110 transition-transform duration-200">
                               {n}
                             </div>
-                            <div className="absolute inset-0 bg-yellow-300/30 rounded-full blur-sm scale-125 animate-pulse"></div>
+                            <div className="absolute inset-0 bg-yellow-300/20 rounded-full blur-sm scale-110 animate-pulse"></div>
                           </div>
                         ))}
                       </div>
 
                       {/* 第二行号码 - 后10个 */}
                       {currentDraw && currentDraw.winningNumbers.length > 10 && (
-                        <div className="flex flex-wrap gap-2 justify-center">
+                        <div className="flex flex-wrap gap-1 justify-center">
                           {currentDraw.winningNumbers.slice(10, 20).map((n, index) => (
                             <div
                               key={n}
                               className="relative group animate-fadeInUp"
-                              style={{ animationDelay: `${(index + 10) * 30}ms` }}
+                              style={{ animationDelay: `${(index + 10) * 20}ms` }}
                             >
-                              <div className="w-6 h-6 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center text-xs font-black text-red-800 shadow-md border-2 border-yellow-200/50 transform group-hover:scale-110 transition-transform duration-200">
+                              <div className="w-5 h-5 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center text-[10px] font-black text-red-800 shadow-sm border border-yellow-200/50 transform group-hover:scale-110 transition-transform duration-200">
                                 {n}
                               </div>
-                              <div className="absolute inset-0 bg-yellow-300/30 rounded-full blur-sm scale-125 animate-pulse"></div>
+                              <div className="absolute inset-0 bg-yellow-300/20 rounded-full blur-sm scale-110 animate-pulse"></div>
                             </div>
                           ))}
                         </div>
@@ -205,10 +200,10 @@ const App: React.FC = () => {
         <main className="flex-1 px-4 -mt-4 z-10 space-y-4 pb-24">
           
           {/* Filters / Tags */}
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-             {["综合排序", "连红榜", "胜率榜", "盈利榜"].map((filter, idx) => (
-               <button 
-                 key={filter} 
+          <div className="flex gap-3 justify-center overflow-x-auto no-scrollbar pb-2">
+             {["综合排序", "连红榜", "盈利榜"].map((filter, idx) => (
+               <button
+                 key={filter}
                  className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors shadow-sm ${
                    idx === 0 ? 'bg-red-600 text-white' : 'bg-white text-gray-600'
                  }`}
