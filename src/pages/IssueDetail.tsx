@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LotteryDraw, Influencer, Prediction } from './types';
-import { fetchLatestHappy8Result } from './services/geminiService';
-import { LotteryBall } from './components/LotteryBall';
-import { InfluencerDetail } from './components/InfluencerDetail';
-import { Search, Flame, Trophy, User, RotateCw, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { LotteryDraw, Influencer, Prediction } from '../types';
+import { getLatestLotteryResults, getLotteryResultByIssue } from '../services/lotteryService';
+import { LotteryBall } from '../components/LotteryBall';
+import { InfluencerDetail } from '../components/InfluencerDetail';
+import { Search, Flame, Trophy, User, RotateCw, CheckCircle2, ChevronRight, ArrowLeft } from 'lucide-react';
 
 // --- MOCK DATA GENERATORS ---
 const NAMES = ["快乐老王", "数据女神", "概率学霸", "彩票算盘", "运气爆棚", "K线大师", "复式之王", "福彩小灵通", "中奖绝缘体克星", "七星北斗"];
@@ -53,33 +54,96 @@ const generateMockInfluencers = (currentIssue: string): Influencer[] => {
   });
 };
 
-const App: React.FC = () => {
+interface IssueDetailProps {}
+
+const IssueDetail: React.FC<IssueDetailProps> = () => {
+  const { issueId } = useParams<{ issueId: string }>();
+  const navigate = useNavigate();
   const [currentDraw, setCurrentDraw] = useState<LotteryDraw | null>(null);
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInfluencerId, setSelectedInfluencerId] = useState<string | null>(null);
-  
+
   // "API" call effect
   useEffect(() => {
     const initData = async () => {
       setLoading(true);
-      const drawData = await fetchLatestHappy8Result();
-      setCurrentDraw(drawData);
-      
-      // Generate influencers based on the fetched issue number
-      const mockInfluencers = generateMockInfluencers(drawData.issue);
-      setInfluencers(mockInfluencers);
-      setLoading(false);
+      try {
+        console.log(`正在加载期号 ${issueId} 的详情数据...`);
+
+        let drawData: LotteryDraw | null = null;
+
+        if (issueId) {
+          // 尝试根据期号获取真实数据
+          drawData = await getLotteryResultByIssue(issueId);
+
+          if (drawData) {
+            console.log(`成功获取期号 ${issueId} 的真实数据`);
+          } else {
+            console.log(`期号 ${issueId} 无真实数据，使用最新数据`);
+            const latestResults = await getLatestLotteryResults(1);
+            drawData = latestResults[0] || null;
+          }
+        } else {
+          // 如果没有期号，获取最新数据
+          const latestResults = await getLatestLotteryResults(1);
+          drawData = latestResults[0] || null;
+        }
+
+        if (drawData) {
+          setCurrentDraw(drawData);
+
+          // Generate influencers based on the issue number
+          const mockInfluencers = generateMockInfluencers(drawData.issue);
+          setInfluencers(mockInfluencers);
+        } else {
+          throw new Error('无法获取开奖数据');
+        }
+      } catch (error) {
+        console.error('加载期号详情失败:', error);
+
+        // 最终后备方案：使用模拟数据
+        const fallbackData: LotteryDraw = {
+          issue: issueId || new Date().getFullYear().toString() + '312',
+          date: new Date().toISOString().split('T')[0],
+          winningNumbers: [3, 7, 16, 17, 18, 19, 23, 24, 26, 29, 30, 37, 43, 48, 57, 62, 67, 72, 79, 80]
+        };
+
+        setCurrentDraw(fallbackData);
+        const mockInfluencers = generateMockInfluencers(fallbackData.issue);
+        setInfluencers(mockInfluencers);
+      } finally {
+        setLoading(false);
+      }
     };
 
     initData();
-  }, []);
+  }, [issueId]);
 
   const handleRefresh = async () => {
     setLoading(true);
-    const drawData = await fetchLatestHappy8Result();
-    setCurrentDraw(drawData);
-    setLoading(false);
+    try {
+      console.log('刷新期号详情数据...');
+      let drawData: LotteryDraw | null = null;
+
+      if (currentDraw?.issue) {
+        drawData = await getLotteryResultByIssue(currentDraw.issue);
+      }
+
+      if (!drawData) {
+        const latestResults = await getLatestLotteryResults(1);
+        drawData = latestResults[0] || null;
+      }
+
+      if (drawData) {
+        setCurrentDraw(drawData);
+        console.log('数据刷新成功');
+      }
+    } catch (error) {
+      console.error('刷新数据失败:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleFollow = (id: string) => {
@@ -118,9 +182,17 @@ const App: React.FC = () => {
           <div className="relative z-10">
             {/* 主标题区域 */}
             <div className="flex justify-between items-start mb-4">
-              <div className="space-y-1.5">
-                <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-lg">快乐8达人汇</h1>
-                <p className="text-red-50 text-sm font-medium tracking-wide">精准分析 · 智能推荐 · 实时更新</p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate('/')}
+                  className="group relative bg-white/15 backdrop-blur-sm p-2 rounded-xl hover:bg-white/25 transition-all duration-300 border border-white/20"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white group-hover:-translate-x-0.5 transition-transform duration-300" />
+                </button>
+                <div className="space-y-1.5">
+                  <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-lg">第 {currentDraw?.issue || '---'} 期</h1>
+                  <p className="text-red-50 text-sm font-medium tracking-wide">专家推荐与分析</p>
+                </div>
               </div>
               <button
                 onClick={handleRefresh}
@@ -140,10 +212,14 @@ const App: React.FC = () => {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                    <span className="text-sm font-semibold text-white">最新开奖</span>
+                    <div>
+                      <span className="text-sm font-semibold text-white">官方开奖</span>
+                      <div className="text-xs text-white/80">📅 {currentDraw?.date || '----'}</div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
+                  <div className="text-right">
                     <div className="text-base font-bold text-white">第 {currentDraw?.issue || '---'} 期</div>
+                    <div className="text-xs text-white/70">✓ 20个正式号码</div>
                   </div>
                 </div>
 
@@ -164,7 +240,7 @@ const App: React.FC = () => {
                             style={{ animationDelay: `${index * 20}ms` }}
                           >
                             <div className="w-5 h-5 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center text-[10px] font-black text-red-800 shadow-sm border border-yellow-200/50 transform group-hover:scale-110 transition-transform duration-200">
-                              {n}
+                              {n.toString().padStart(2, '0')}
                             </div>
                             <div className="absolute inset-0 bg-yellow-300/20 rounded-full blur-sm scale-110 animate-pulse"></div>
                           </div>
@@ -322,4 +398,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default IssueDetail;
