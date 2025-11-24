@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, TrendingUp, Trophy, Zap, Crown, Target, Flame } from 'lucide-react';
 
 interface BannerSlide {
@@ -20,6 +21,7 @@ interface BannerSlide {
 }
 
 const BannerCarousel: React.FC = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
@@ -96,7 +98,7 @@ const BannerCarousel: React.FC = () => {
 
   const handleRecommendationClick = () => {
     // 跳转到推荐号组页面
-    console.log('跳转到推荐号组');
+    navigate('/ai-recommendation');
   };
 
   const currentSlideData = slides[currentSlide];

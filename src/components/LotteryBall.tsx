@@ -7,7 +7,7 @@ interface LotteryBallProps {
   className?: string;
 }
 
-export const LotteryBall: React.FC<LotteryBallProps> = ({ number, isHit = false, size = 'md', className = '' }) => {
+const LotteryBall: React.FC<LotteryBallProps> = ({ number, isHit = false, size = 'md', className = '' }) => {
   const sizeClasses = {
     sm: 'w-6 h-6 text-xs',
     md: 'w-8 h-8 text-sm',
@@ -28,3 +28,5 @@ export const LotteryBall: React.FC<LotteryBallProps> = ({ number, isHit = false,
     </div>
   );
 };
+
+export default LotteryBall;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Influencer } from '../types';
 import { X, UserPlus, Trophy, TrendingUp, DollarSign, Lock } from 'lucide-react';
 import { StatsChart } from './StatsChart';
-import { LotteryBall } from './LotteryBall';
+import LotteryBall from './LotteryBall';
 
 interface InfluencerDetailProps {
   influencer: Influencer;
@@ -50,70 +50,50 @@ export const InfluencerDetail: React.FC<InfluencerDetailProps> = ({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
-        {/* Profile Header */}
-        <div className="flex flex-col items-center">
-          <div className="relative">
-            <img 
-              src={influencer.avatar} 
-              alt={influencer.name} 
-              className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
-            />
-            <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-white p-1.5 rounded-full border-2 border-white">
-              <Trophy className="w-4 h-4" />
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+
+      {/* Current Recommendation - 移至顶部 */}
+        <div className="bg-gradient-to-br from-red-50 to-orange-50 p-4 rounded-2xl border border-red-100">
+          {/* 达人信息整合到推荐卡片顶部 */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="relative">
+              <img
+                src={influencer.avatar}
+                alt={influencer.name}
+                className="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover"
+              />
+              <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-white p-1 rounded-full border border-white">
+                <Trophy className="w-3 h-3" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-bold text-gray-900">{influencer.name}</h1>
+                <span className="text-xs bg-red-200 text-red-800 px-2 py-0.5 rounded-md">
+                  {influencer.currentRecommendation.type}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs text-red-500 font-medium">{influencer.title}</p>
+                <span className="text-xs text-gray-400">•</span>
+                <span className="text-xs text-gray-500">本期推荐 ({influencer.history[0].issue})</span>
+              </div>
+              <div className="flex gap-1 mt-1">
+                {influencer.tags.slice(0, 2).map(tag => (
+                  <span key={tag} className="px-1.5 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-sm">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-          <h1 className="mt-3 text-xl font-bold text-gray-900">{influencer.name}</h1>
-          <p className="text-sm text-red-500 font-medium">{influencer.title}</p>
-          
-          <div className="flex gap-2 mt-2">
-            {influencer.tags.map(tag => (
-              <span key={tag} className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-md">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
 
-        {/* Key Stats Grid */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white p-3 rounded-xl shadow-sm text-center">
-            <div className="flex justify-center mb-1 text-red-500"><Trophy size={18} /></div>
-            <p className="text-xl font-bold text-gray-900">{influencer.winRate}%</p>
-            <p className="text-xs text-gray-500">近期胜率</p>
-          </div>
-          <div className="bg-white p-3 rounded-xl shadow-sm text-center">
-            <div className="flex justify-center mb-1 text-green-500"><DollarSign size={18} /></div>
-            <p className="text-xl font-bold text-gray-900">{(influencer.totalProfit / 10000).toFixed(1)}w</p>
-            <p className="text-xs text-gray-500">累计盈利</p>
-          </div>
-          <div className="bg-white p-3 rounded-xl shadow-sm text-center">
-            <div className="flex justify-center mb-1 text-blue-500"><UserPlus size={18} /></div>
-            <p className="text-xl font-bold text-gray-900">{(influencer.followers / 1000).toFixed(1)}k</p>
-            <p className="text-xs text-gray-500">粉丝数</p>
-          </div>
-        </div>
-
-        {/* Chart Section */}
-        <div>
-          <h3 className="text-base font-bold text-gray-800 mb-3 flex items-center">
-            <TrendingUp className="w-4 h-4 mr-2 text-red-500" />
-            走势分析
-          </h3>
-          <StatsChart history={influencer.history} />
-        </div>
-
-        {/* Current Recommendation */}
-        <div className="bg-gradient-to-br from-red-50 to-orange-50 p-4 rounded-2xl border border-red-100">
-          <div className="flex justify-between items-center mb-3">
-             <h3 className="text-base font-bold text-red-800">本期推荐 ({influencer.history[0].issue})</h3>
-             <span className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-md">
-               {influencer.currentRecommendation.type}
-             </span>
-          </div>
-          <p className="text-sm text-gray-600 mb-4 italic">
-            “{influencer.currentRecommendation.description}”
+          {/* 推荐描述 */}
+          <p className="text-sm text-gray-600 mb-3 italic">
+            "{influencer.currentRecommendation.description}"
           </p>
+
+          {/* 推荐号码 */}
           <div className="flex flex-wrap gap-1 justify-center">
             {influencer.currentRecommendation.numbers.map((num) => (
               <div key={num} className="w-5 h-5 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-sm border border-red-700 border-opacity-20">
@@ -121,7 +101,40 @@ export const InfluencerDetail: React.FC<InfluencerDetailProps> = ({
               </div>
             ))}
           </div>
-          
+        </div>
+
+      {/* Key Stats Grid - 单行布局 */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-white p-1.5 rounded-lg shadow-sm text-center">
+            <div className="flex items-center justify-center gap-1">
+              <Trophy size={14} className="text-red-500 flex-shrink-0" />
+              <span className="text-base font-bold text-gray-900">{influencer.winRate}%</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">胜率</p>
+          </div>
+          <div className="bg-white p-1.5 rounded-lg shadow-sm text-center">
+            <div className="flex items-center justify-center gap-1">
+              <DollarSign size={14} className="text-green-500 flex-shrink-0" />
+              <span className="text-base font-bold text-gray-900">{(influencer.totalProfit / 10000).toFixed(1)}w</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">盈利</p>
+          </div>
+          <div className="bg-white p-1.5 rounded-lg shadow-sm text-center">
+            <div className="flex items-center justify-center gap-1">
+              <UserPlus size={14} className="text-blue-500 flex-shrink-0" />
+              <span className="text-base font-bold text-gray-900">{(influencer.followers / 1000).toFixed(1)}k</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">粉丝</p>
+          </div>
+        </div>
+
+        {/* Chart Section */}
+        <div>
+          <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center">
+            <TrendingUp className="w-3.5 h-3.5 mr-1.5 text-red-500" />
+            走势分析
+          </h3>
+          <StatsChart history={influencer.history} />
         </div>
 
         {/* Next Issue Recommendation */}

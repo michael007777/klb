@@ -23,22 +23,20 @@ export const StatsChart: React.FC<StatsChartProps> = ({ history }) => {
   }));
 
   return (
-    <div className="w-full h-48 bg-white rounded-xl p-2 shadow-inner">
-      <p className="text-xs text-gray-500 mb-2 pl-2">近7期命中走势</p>
+    <div className="w-full h-36 bg-white rounded-xl p-2 shadow-inner">
+      <p className="text-xs text-gray-500 mb-1 pl-2">近7期命中走势</p>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-          <XAxis 
-            dataKey="name" 
-            tick={{ fontSize: 10, fill: '#9ca3af' }} 
-            axisLine={false} 
-            tickLine={false} 
+          <XAxis
+            dataKey="name"
+            hide={true}
           />
-          <YAxis 
-            hide 
-            domain={[0, 'auto']} 
+          <YAxis
+            hide
+            domain={[0, 'auto']}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
             labelStyle={{ color: '#374151', fontWeight: 'bold' }}
           />

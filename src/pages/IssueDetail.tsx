@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LotteryDraw, Influencer, Prediction } from '../types';
 import { getLatestLotteryResults, getLotteryResultByIssue } from '../services/lotteryService';
-import { LotteryBall } from '../components/LotteryBall';
+import LotteryBall from '../components/LotteryBall';
 import { InfluencerDetail } from '../components/InfluencerDetail';
 import { Search, Flame, Trophy, User, RotateCw, CheckCircle2, ChevronRight, ArrowLeft } from 'lucide-react';
 
@@ -182,24 +182,24 @@ const IssueDetail: React.FC<IssueDetailProps> = () => {
           <div className="relative z-10">
             {/* 主标题区域 */}
             <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate('/')}
-                  className="group relative bg-white/15 backdrop-blur-sm p-2 rounded-xl hover:bg-white/25 transition-all duration-300 border border-white/20"
+                  className="group relative bg-white/10 backdrop-blur-sm p-1.5 rounded-lg hover:bg-white/20 transition-all duration-300 border border-white/15"
                 >
-                  <ArrowLeft className="w-5 h-5 text-white group-hover:-translate-x-0.5 transition-transform duration-300" />
+                  <ArrowLeft className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform duration-300" />
                 </button>
-                <div className="space-y-1.5">
-                  <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-lg">第 {currentDraw?.issue || '---'} 期</h1>
-                  <p className="text-red-50 text-sm font-medium tracking-wide">专家推荐与分析</p>
+                <div className="space-y-1">
+                  <h1 className="text-xl font-black tracking-tight text-white drop-shadow-lg">第 {currentDraw?.issue || '---'} 期</h1>
+                  <p className="text-red-50 text-xs font-medium tracking-wide">专家推荐与分析</p>
                 </div>
               </div>
               <button
                 onClick={handleRefresh}
-                className="group relative bg-white/15 backdrop-blur-sm p-3 rounded-2xl hover:bg-white/25 transition-all duration-300 border border-white/20 hover:scale-105"
+                className="group relative bg-white/10 backdrop-blur-sm p-1.5 rounded-lg hover:bg-white/20 transition-all duration-300 border border-white/15 hover:scale-105"
               >
-                <RotateCw className={`w-5 h-5 text-white ${loading ? 'animate-spin' : ''} group-hover:rotate-180 transition-transform duration-500`} />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <RotateCw className={`w-3.5 h-3.5 text-white ${loading ? 'animate-spin' : ''} group-hover:rotate-180 transition-transform duration-500`} />
+                <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
               </button>
             </div>
 
@@ -212,14 +212,10 @@ const IssueDetail: React.FC<IssueDetailProps> = () => {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                    <div>
-                      <span className="text-sm font-semibold text-white">官方开奖</span>
-                      <div className="text-xs text-white/80">📅 {currentDraw?.date || '----'}</div>
-                    </div>
+                    <span className="text-sm font-semibold text-white">官方开奖</span>
                   </div>
-                  <div className="text-right">
-                    <div className="text-base font-bold text-white">第 {currentDraw?.issue || '---'} 期</div>
-                    <div className="text-xs text-white/70">✓ 20个正式号码</div>
+                  <div className="text-xs text-white/80">
+                    📅 {currentDraw?.date || '----'}
                   </div>
                 </div>
 
@@ -273,10 +269,10 @@ const IssueDetail: React.FC<IssueDetailProps> = () => {
         </header>
 
         {/* --- MAIN CONTENT --- */}
-        <main className="flex-1 px-4 -mt-4 z-10 space-y-4 pb-24">
-          
+        <main className="flex-1 px-4 -mt-4 z-10 space-y-6 pb-24">
+
           {/* Filters / Tags */}
-          <div className="flex gap-3 justify-center overflow-x-auto no-scrollbar pb-2">
+          <div className="flex gap-3 justify-center overflow-x-auto no-scrollbar pb-2 pt-8">
              {["综合排序", "连红榜", "盈利榜"].map((filter, idx) => (
                <button
                  key={filter}

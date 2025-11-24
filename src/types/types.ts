@@ -30,4 +30,30 @@ export interface Influencer {
   likes: number;
 }
 
+export interface AIRecommendation {
+  id: string;
+  algorithmName: string;
+  description: string;
+  accuracy: number;
+  numbers: number[];
+  confidence: number;
+  risk: 'low' | 'medium' | 'high';
+  recommendedStake: number;
+  lastWinRate: number;
+  totalPredictions: number;
+  tags: string[];
+  createdAt: string;
+}
+
+export interface AlgorithmInfo {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  accuracy: number;
+  totalPredictions: number;
+  avgConfidence: number;
+  features: string[];
+}
+
 export type Tab = 'home' | 'rankings' | 'profile';
