@@ -168,7 +168,7 @@ const IssueList: React.FC = () => {
               </div>
 
               {/* 专属推荐区域 */}
-              <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+              <div className="mt-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-purple-700">🎯 专属推荐</span>
@@ -180,44 +180,22 @@ const IssueList: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 选九复试12个号码展示 - 小巧精致 */}
+                {/* 选九复试12个号码展示 - 完整显示 */}
                 <div className="mt-3">
                   <div className="text-sm text-gray-600 mb-2 font-medium">12个推荐号码 (8个中标红):</div>
 
-                  {/* 第一行：前6个号码 */}
-                  <div className="flex justify-center items-center gap-1 mb-1">
+                  {/* 完整显示所有12个号码，自动换行 */}
+                  <div className="flex justify-center items-center gap-1 flex-wrap">
                     {(() => {
                       const pick9Numbers = generatePick9Numbers(issue.winningNumbers);
-                      return pick9Numbers.slice(0, 6).map((num, index) => {
+                      return pick9Numbers.map((num, index) => {
                         const isWinning = issue.winningNumbers.includes(num);
                         return (
                           <div
-                            key={`pick9-row1-${num}`}
+                            key={`pick9-${num}`}
                             className={`w-6 h-6 flex items-center justify-center text-xs font-medium transition-all hover:scale-105 flex-shrink-0 rounded-full ${
                               isWinning
-                                ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
-                          >
-                            {num.toString().padStart(2, '0')}
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-
-                  {/* 第二行：后6个号码 */}
-                  <div className="flex justify-center items-center gap-1">
-                    {(() => {
-                      const pick9Numbers = generatePick9Numbers(issue.winningNumbers);
-                      return pick9Numbers.slice(6, 12).map((num, index) => {
-                        const isWinning = issue.winningNumbers.includes(num);
-                        return (
-                          <div
-                            key={`pick9-row2-${num}`}
-                            className={`w-6 h-6 flex items-center justify-center text-xs font-medium transition-all hover:scale-105 flex-shrink-0 rounded-full ${
-                              isWinning
-                                ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm'
+                                ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm ring-2 ring-yellow-400 ring-offset-1 shadow-lg transform scale-110'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                           >

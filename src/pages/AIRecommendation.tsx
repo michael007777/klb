@@ -26,8 +26,7 @@ const AIRecommendationPage: React.FC = () => {
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
   const [algorithms, setAlgorithms] = useState<AlgorithmInfo[]>([]);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('all');
-  const [selectedRisk, setSelectedRisk] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('accuracy');
+    const [sortBy, setSortBy] = useState<string>('accuracy');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -204,7 +203,6 @@ const AIRecommendationPage: React.FC = () => {
   // 筛选和排序推荐
   const filteredAndSortedRecommendations = recommendations
     .filter(rec => selectedAlgorithm === 'all' || rec.algorithmName === algorithms.find(a => a.id === selectedAlgorithm)?.name)
-    .filter(rec => selectedRisk === 'all' || rec.risk === selectedRisk)
     .sort((a, b) => {
       switch (sortBy) {
         case 'accuracy':
@@ -246,10 +244,11 @@ const AIRecommendationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - 优化布局，包含筛选器 */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          {/* 头部标题和刷新按钮 */}
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate(-1)}
@@ -258,117 +257,110 @@ const AIRecommendationPage: React.FC = () => {
                 <ChevronDown className="w-5 h-5 rotate-90" />
               </button>
               <div className="flex items-center space-x-2">
-                <Brain className="w-8 h-8" />
+                <Brain className="w-6 h-6 sm:w-8 sm:h-8" />
                 <div>
-                  <h1 className="text-2xl font-bold">AI智能推荐</h1>
-                  <p className="text-blue-100 text-sm">基于大数据分析的最优号码组合</p>
+                  <h1 className="text-lg sm:text-2xl font-bold">AI智能推荐</h1>
+                  <p className="text-blue-100 text-xs sm:text-sm hidden xs:block">基于大数据分析的最优号码组合</p>
                 </div>
               </div>
             </div>
+            {/* 刷新按钮 - 小图标样式 */}
             <button
               onClick={refreshRecommendations}
               disabled={isLoading}
-              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors disabled:opacity-50"
+              title="刷新推荐"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-              <span>刷新推荐</span>
+              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
+          </div>
+
+          {/* 筛选器 - 集成到头部区域内 */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <Filter className="w-4 h-4 text-blue-100" />
+              <span className="text-sm font-medium text-blue-100">筛选</span>
+            </div>
+
+            {/* 筛选选项 - 两列布局，适配白色背景 */}
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                value={selectedAlgorithm}
+                onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                className="px-3 py-2 bg-white/90 border border-white/20 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-white backdrop-blur-sm w-full"
+              >
+                <option value="all">所有算法</option>
+                {algorithms.map(algorithm => (
+                  <option key={algorithm.id} value={algorithm.id}>{algorithm.name}</option>
+                ))}
+              </select>
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 bg-white/90 border border-white/20 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-white backdrop-blur-sm w-full"
+              >
+                <option value="accuracy">按准确率排序</option>
+                <option value="confidence">按置信度排序</option>
+                <option value="winRate">按胜率排序</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* 算法信息概览 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {algorithms.slice(0, 6).map((algorithm) => (
-            <div key={algorithm.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900">{algorithm.name}</h3>
-                <span className="text-sm text-gray-500">{algorithm.type}</span>
-              </div>
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <div className="flex items-center space-x-1">
-                  <Target className="w-4 h-4" />
-                  <span>{algorithm.accuracy}%</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <BarChart3 className="w-4 h-4" />
-                  <span>{algorithm.totalPredictions}次</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 筛选器 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">筛选：</span>
-            </div>
-
-            <select
-              value={selectedAlgorithm}
-              onChange={(e) => setSelectedAlgorithm(e.target.value)}
-              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">所有算法</option>
-              {algorithms.map(algorithm => (
-                <option key={algorithm.id} value={algorithm.id}>{algorithm.name}</option>
-              ))}
-            </select>
-
-            <select
-              value={selectedRisk}
-              onChange={(e) => setSelectedRisk(e.target.value)}
-              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">所有风险</option>
-              <option value="low">低风险</option>
-              <option value="medium">中风险</option>
-              <option value="high">高风险</option>
-            </select>
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="accuracy">按准确率排序</option>
-              <option value="confidence">按置信度排序</option>
-              <option value="winRate">按胜率排序</option>
-            </select>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* 推荐列表 */}
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-4">
           {filteredAndSortedRecommendations.map((recommendation) => (
             <div key={recommendation.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+              <div className="p-3 sm:p-4">
+                {/* Header - 移动端优化 */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-3">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{recommendation.algorithmName}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getRiskColor(recommendation.risk)}`}>
-                        {getRiskText(recommendation.risk)}
-                      </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900">{recommendation.algorithmName}</h3>
+                      {/* 心形收藏按钮 - 移动到标题右侧 */}
+                      <button className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
                     </div>
-                    <p className="text-gray-600 text-sm mb-3">{recommendation.description}</p>
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-1">{recommendation.description}</p>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3">
                       {recommendation.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                        <span key={index} className="px-1.5 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full">
                           {tag}
                         </span>
                       ))}
                     </div>
 
+                    {/* 参数展示 - 移动端优化 */}
+                    <div className="bg-gray-50 rounded-lg p-2 mb-3">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center space-x-1">
+                          <span className="text-gray-500">准确率:</span>
+                          <span className="font-bold text-blue-600">{recommendation.accuracy}%</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-gray-500">置信度:</span>
+                          <span className="font-bold text-green-600">{recommendation.confidence}%</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-gray-500">胜率:</span>
+                          <span className="font-bold text-purple-600">{recommendation.lastWinRate}%</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-gray-500">投注:</span>
+                          <span className="font-bold text-orange-600">¥{recommendation.recommendedStake}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* 号码展示 */}
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div className="bg-white rounded-lg border border-gray-200 p-3 mb-3">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-gray-700">推荐号码组合</span>
                         <button
@@ -388,47 +380,20 @@ const AIRecommendationPage: React.FC = () => {
                           )}
                         </button>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1 justify-center">
                         {recommendation.numbers.map((number) => (
                           <LotteryBall key={number} number={number} size="sm" />
                         ))}
                       </div>
                     </div>
-
-                    {/* 统计信息 */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-blue-600">{recommendation.accuracy}%</div>
-                        <div className="text-xs text-gray-500">准确率</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-green-600">{recommendation.confidence}%</div>
-                        <div className="text-xs text-gray-500">置信度</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-purple-600">{recommendation.lastWinRate}%</div>
-                        <div className="text-xs text-gray-500">近期胜率</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-orange-600">¥{recommendation.recommendedStake}</div>
-                        <div className="text-xs text-gray-500">建议投注</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 操作按钮 */}
-                  <div className="flex flex-col space-y-2 ml-4">
-                    <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                      <Heart className="w-5 h-5" />
-                    </button>
                   </div>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t">
-                  <div className="flex items-center space-x-4">
+                {/* Footer - 移动端优化 */}
+                <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t gap-2">
+                  <div className="flex items-center space-x-2 xs:space-x-3">
                     <span>总预测: {recommendation.totalPredictions}次</span>
-                    <span>更新时间: {new Date(recommendation.createdAt).toLocaleString()}</span>
+                    <span className="hidden xs:inline">更新: {new Date(recommendation.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Award className="w-3 h-3 text-yellow-500" />
