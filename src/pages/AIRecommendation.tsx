@@ -16,7 +16,9 @@ import {
   Filter,
   ChevronDown,
   Copy,
-  Heart
+  Heart,
+  X,
+  Sliders
 } from 'lucide-react';
 import { AIRecommendation, AlgorithmInfo } from '../types/types';
 import LotteryBall from '../components/LotteryBall';
@@ -29,6 +31,7 @@ const AIRecommendationPage: React.FC = () => {
     const [sortBy, setSortBy] = useState<string>('accuracy');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   // 模拟算法信息
   const mockAlgorithms: AlgorithmInfo[] = [
@@ -275,37 +278,20 @@ const AIRecommendationPage: React.FC = () => {
             </button>
           </div>
 
-          {/* 筛选器 - 集成到头部区域内 */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
-            <div className="flex items-center space-x-2 mb-3">
-              <Filter className="w-4 h-4 text-blue-100" />
+          {/* 筛选器触发按钮 */}
+          <button
+            onClick={() => setShowFilterMenu(true)}
+            className="w-full bg-white/10 backdrop-blur-sm rounded-lg p-3 hover:bg-white/20 transition-colors flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-2">
+              <Sliders className="w-4 h-4 text-blue-100" />
               <span className="text-sm font-medium text-blue-100">筛选</span>
+              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">
+                {selectedAlgorithm === 'all' ? '所有算法' : algorithms.find(a => a.id === selectedAlgorithm)?.name}
+              </span>
             </div>
-
-            {/* 筛选选项 - 两列布局，适配白色背景 */}
-            <div className="grid grid-cols-2 gap-3">
-              <select
-                value={selectedAlgorithm}
-                onChange={(e) => setSelectedAlgorithm(e.target.value)}
-                className="px-3 py-2 bg-white/90 border border-white/20 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-white backdrop-blur-sm w-full"
-              >
-                <option value="all">所有算法</option>
-                {algorithms.map(algorithm => (
-                  <option key={algorithm.id} value={algorithm.id}>{algorithm.name}</option>
-                ))}
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 bg-white/90 border border-white/20 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-white backdrop-blur-sm w-full"
-              >
-                <option value="accuracy">按准确率排序</option>
-                <option value="confidence">按置信度排序</option>
-                <option value="winRate">按胜率排序</option>
-              </select>
-            </div>
-          </div>
+            <ChevronDown className="w-4 h-4 text-blue-100" />
+          </button>
         </div>
       </div>
 
@@ -414,6 +400,99 @@ const AIRecommendationPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* 筛选弹窗 */}
+      {showFilterMenu && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* 背景遮罩 */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowFilterMenu(false)}
+          />
+
+          {/* 底部弹出面板 */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl">
+            {/* 拖拽指示器 */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+
+            {/* 头部 */}
+            <div className="flex items-center justify-between px-4 pb-4 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">筛选设置</h2>
+              <button
+                onClick={() => setShowFilterMenu(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* 筛选内容 */}
+            <div className="p-4 space-y-6">
+              {/* 算法选择 */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-3 block">选择算法</label>
+                <div className="space-y-2">
+                  {[
+                    { id: 'all', name: '所有算法', description: '显示所有推荐' },
+                    ...algorithms
+                  ].map((algorithm) => (
+                    <button
+                      key={algorithm.id}
+                      onClick={() => {
+                        setSelectedAlgorithm(algorithm.id);
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                        selectedAlgorithm === algorithm.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="font-medium text-gray-900">{algorithm.name}</div>
+                      {'description' in algorithm && (
+                        <div className="text-sm text-gray-500 mt-1">{algorithm.description}</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 排序方式 */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-3 block">排序方式</label>
+                <div className="space-y-2">
+                  {[
+                    { value: 'accuracy', label: '按准确率排序', icon: '🎯' },
+                    { value: 'confidence', label: '按置信度排序', icon: '📊' },
+                    { value: 'winRate', label: '按胜率排序', icon: '🏆' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center space-x-3 ${
+                        sortBy === option.value
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="text-lg">{option.icon}</span>
+                      <span className="font-medium text-gray-900">{option.label}</span>
+                      {sortBy === option.value && (
+                        <CheckCircle className="w-4 h-4 text-blue-500 ml-auto" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
